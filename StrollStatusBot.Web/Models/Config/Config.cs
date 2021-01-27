@@ -29,6 +29,6 @@ namespace StrollStatusBot.Web.Models.Config
         public string GoogleRange { get; set; }
 
         [JsonProperty]
-        public string DontUnderstandStickerFileId { get; set; }
+        public List<string> InstructionLines { get; set; }
     }
 }

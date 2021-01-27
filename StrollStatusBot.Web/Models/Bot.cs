@@ -10,10 +10,10 @@ namespace StrollStatusBot.Web.Models
     {
         public TelegramBotClient Client { get; }
 
-        public IReadOnlyCollection<Command> Commands => _commands.AsReadOnly();
+        public IEnumerable<Command> Commands => _commands.AsReadOnly();
 
         public Config.Config Config { get; }
-        public Provider GoogleSheetsProvider { get; private set; }
+        public UsersManager UsersManager { get; private set; }
 
         public Bot(IOptions<Config.Config> options)
         {
@@ -22,15 +22,12 @@ namespace StrollStatusBot.Web.Models
             Client = new TelegramBotClient(Config.Token);
         }
 
-        public void Initialize(Provider googleSheetsProvider)
+        public void Initialize(UsersManager usersManager)
         {
-            GoogleSheetsProvider = googleSheetsProvider;
+            UsersManager = usersManager;
 
-            _commands = new List<Command>();
-
-            var startCommand = new StartCommand(Commands);
-
-            _commands.Insert(0, startCommand);
+            var startCommand = new StartCommand(Config.InstructionLines);
+            _commands = new List<Command> { startCommand };
         }
 
         private List<Command> _commands;

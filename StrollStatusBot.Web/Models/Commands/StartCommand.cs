@@ -8,24 +8,20 @@ namespace StrollStatusBot.Web.Models.Commands
 {
     internal sealed class StartCommand : Command
     {
-        internal override string Name => "start";
-        internal override string Description => "инструкция и список команд";
+        protected override string Name => "start";
 
-        public StartCommand(IReadOnlyCollection<Command> commands) => _commands = commands;
+        public StartCommand(List<string> instructionLines) => _instructionLines = instructionLines;
 
-        internal override async Task ExecuteAsync(ChatId chatId, int replyToMessageId, ITelegramBotClient client)
+        internal override async Task ExecuteAsync(ChatId chatId, ITelegramBotClient client)
         {
             var builder = new StringBuilder();
-            builder.AppendLine();
-            builder.AppendLine("Команды:");
-            foreach (Command command in _commands)
+            foreach (string line in _instructionLines)
             {
-                builder.AppendLine($"/{command.Name} – {command.Description}");
+                builder.AppendLine(line);
             }
-
             await client.SendTextMessageAsync(chatId, builder.ToString());
         }
 
-        private readonly IReadOnlyCollection<Command> _commands;
+        private readonly List<string> _instructionLines;
     }
 }

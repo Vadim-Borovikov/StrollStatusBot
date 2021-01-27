@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using StrollStatusBot.Web.Models;
 using Microsoft.AspNetCore.Mvc;
-using Telegram.Bot.Types;
+using User = Telegram.Bot.Types.User;
 
 namespace StrollStatusBot.Web.Controllers
 {

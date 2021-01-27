@@ -30,7 +30,7 @@ namespace StrollStatusBot.Web.Models
                     _users[from.Id] = new User(from);
                 }
                 _users[from.Id].Status = text;
-                _users[from.Id].Timestamp = DateTime.Now;
+                _users[from.Id].Timestamp = Utils.Now();
                 DataManager.UpdateValues(_googleSheetsProvider, _googleRange, _users.Values);
             }
         }

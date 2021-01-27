@@ -29,6 +29,9 @@ namespace StrollStatusBot.Web.Models.Config
         public string GoogleRange { get; set; }
 
         [JsonProperty]
+        public string SystemTimeZoneId { get; set; }
+
+        [JsonProperty]
         public List<string> InstructionLines { get; set; }
     }
 }

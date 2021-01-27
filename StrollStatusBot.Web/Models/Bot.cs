@@ -19,6 +19,8 @@ namespace StrollStatusBot.Web.Models
         {
             Config = options.Value;
 
+            Utils.SetupTimeZoneInfo(Config.SystemTimeZoneId);
+
             Client = new TelegramBotClient(Config.Token);
         }
 

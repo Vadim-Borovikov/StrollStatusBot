@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using StrollStatusBot.Web.Models.Commands;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
@@ -17,6 +18,8 @@ namespace StrollStatusBot.Web.Models
         public Bot(IOptions<Config.Config> options)
         {
             Config = options.Value;
+
+            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(Config.CultureInfoName);
 
             Utils.SetupTimeZoneInfo(Config.SystemTimeZoneId);
             Utils.SetupReplyMarkup();

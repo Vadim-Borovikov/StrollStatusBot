@@ -32,6 +32,9 @@ namespace StrollStatusBot.Web.Models.Config
         public string SystemTimeZoneId { get; set; }
 
         [JsonProperty]
+        public string CultureInfoName { get; set; }
+
+        [JsonProperty]
         public List<string> InstructionLines { get; set; }
     }
 }

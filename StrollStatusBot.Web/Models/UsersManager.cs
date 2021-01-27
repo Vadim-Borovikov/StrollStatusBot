@@ -1,13 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using GoogleSheetsManager;
+using Telegram.Bot;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace StrollStatusBot.Web.Models
 {
     public sealed class UsersManager
     {
-        internal UsersManager(Provider googleSheetsProvider, string googleRange)
+        internal UsersManager(ITelegramBotClient client, Provider googleSheetsProvider, string googleRange)
         {
+            _client = client;
             _googleSheetsProvider = googleSheetsProvider;
             _googleRange = googleRange;
             _locker = new object();
@@ -21,7 +24,7 @@ namespace StrollStatusBot.Web.Models
             }
         }
 
-        internal void AddStatus(Telegram.Bot.Types.User from, string text)
+        internal Task AddStatus(Telegram.Bot.Types.User from, string text)
         {
             lock (_locker)
             {
@@ -33,9 +36,12 @@ namespace StrollStatusBot.Web.Models
                 _users[from.Id].Timestamp = Utils.Now();
                 DataManager.UpdateValues(_googleSheetsProvider, _googleRange, _users.Values);
             }
+
+            return _client.SendTextMessageAsync(from.Id, "✅", replyMarkup: Utils.IReplyMarkup);
         }
 
         private readonly object _locker;
+        private readonly ITelegramBotClient _client;
         private readonly Provider _googleSheetsProvider;
         private readonly string _googleRange;
         private Dictionary<int, User> _users;

@@ -12,14 +12,14 @@ namespace StrollStatusBot.Web.Models.Commands
 
         public StartCommand(List<string> instructionLines) => _instructionLines = instructionLines;
 
-        internal override async Task ExecuteAsync(ChatId chatId, ITelegramBotClient client)
+        internal override Task ExecuteAsync(ChatId chatId, ITelegramBotClient client)
         {
             var builder = new StringBuilder();
             foreach (string line in _instructionLines)
             {
                 builder.AppendLine(line);
             }
-            await client.SendTextMessageAsync(chatId, builder.ToString());
+            return client.SendTextMessageAsync(chatId, builder.ToString(), replyMarkup: Utils.IReplyMarkup);
         }
 
         private readonly List<string> _instructionLines;

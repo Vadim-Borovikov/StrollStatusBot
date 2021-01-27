@@ -23,7 +23,7 @@ namespace StrollStatusBot.Web.Models
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            var usersManager = new UsersManager(_googleSheetsProvider, _bot.Config.GoogleRange);
+            var usersManager = new UsersManager(_bot.Client, _googleSheetsProvider, _bot.Config.GoogleRange);
             _bot.Initialize(usersManager);
             usersManager.LoadUsers();
 

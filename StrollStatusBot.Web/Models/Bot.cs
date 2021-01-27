@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using StrollStatusBot.Web.Models.Commands;
-using GoogleSheetsManager;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
 
@@ -20,6 +19,7 @@ namespace StrollStatusBot.Web.Models
             Config = options.Value;
 
             Utils.SetupTimeZoneInfo(Config.SystemTimeZoneId);
+            Utils.SetupReplyMarkup();
 
             Client = new TelegramBotClient(Config.Token);
         }

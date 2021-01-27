@@ -18,28 +18,25 @@ namespace StrollStatusBot.Web.Controllers
             return Ok();
         }
 
-        private async Task ProcessAsync(Update update)
+        private Task ProcessAsync(Update update)
         {
             if (update?.Type != UpdateType.Message)
             {
-                return;
+                return Task.CompletedTask;
             }
 
             Message message = update.Message;
 
             if (message.Type != MessageType.Text)
             {
-                return;
+                return Task.CompletedTask;
             }
 
             Command command = _bot.Commands.FirstOrDefault(c => c.IsInvokingBy(message));
-            if (command != null)
-            {
-                await command.ExecuteAsync(message.From.Id, _bot.Client);
-                return;
-            }
 
-            _bot.UsersManager.AddStatus(message.From, message.Text);
+            return command != null
+                ? command.ExecuteAsync(message.From.Id, _bot.Client)
+                : _bot.UsersManager.AddStatus(message.From, message.Text);
         }
 
         private readonly IBot _bot;

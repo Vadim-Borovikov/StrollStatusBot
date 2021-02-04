@@ -80,6 +80,6 @@ namespace StrollStatusBot.Web.Models
         private readonly Provider _googleSheetsProvider;
         private readonly UsersManager _usersManager;
 
-        private const string ApplicationName = "DaresGameBot";
+        private const string ApplicationName = "StrollStatusBot";
     }
 }

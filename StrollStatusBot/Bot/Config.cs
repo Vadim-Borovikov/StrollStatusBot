@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace StrollStatusBot.Bot
 {
-    public sealed class Config
+    public class Config
     {
         [JsonProperty]
         public string Token { get; set; }
@@ -14,13 +14,10 @@ namespace StrollStatusBot.Bot
         [JsonProperty]
         public int Port { get; set; }
 
-        [JsonProperty]
-        public Dictionary<string, string> GoogleCredentials { get; set; }
-
-        [JsonProperty]
-        public string GoogleCredentialsJson { get; set; }
-
         internal string Url => $"{Host}:{Port}/{Token}";
+
+        [JsonProperty]
+        public Dictionary<string, string> GoogleCredential { get; set; }
 
         [JsonProperty]
         public string GoogleSheetId { get; set; }

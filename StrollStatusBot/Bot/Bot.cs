@@ -22,12 +22,8 @@ namespace StrollStatusBot.Bot
 
             _client = new TelegramBotClient(_config.Token);
 
-            string googleCredentialsJson = _config.GoogleCredentialsJson;
-            if (string.IsNullOrWhiteSpace(googleCredentialsJson))
-            {
-                googleCredentialsJson = JsonConvert.SerializeObject(_config.GoogleCredentials);
-            }
-            _googleSheetsProvider = new Provider(googleCredentialsJson, ApplicationName, _config.GoogleSheetId);
+            string googleCredentialJson = JsonConvert.SerializeObject(_config.GoogleCredential);
+            _googleSheetsProvider = new Provider(googleCredentialJson, ApplicationName, _config.GoogleSheetId);
 
             CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(_config.CultureInfoName);
 

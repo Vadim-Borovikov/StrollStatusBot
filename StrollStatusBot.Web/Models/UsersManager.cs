@@ -36,7 +36,7 @@ namespace StrollStatusBot.Web.Models
                 DataManager.UpdateValues(_googleSheetsProvider, _googleRange, _users.Values);
             }
 
-            return _client.SendTextMessageAsync(from.Id, "✅", replyMarkup: Utils.IReplyMarkup);
+            return _client.SendTextMessageAsync(from.Id, "✅", replyMarkup: Utils.ReplyMarkup);
         }
 
         private readonly object _locker;

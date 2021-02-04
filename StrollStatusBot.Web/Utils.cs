@@ -21,7 +21,7 @@ namespace StrollStatusBot.Web
             var raw2 = new[] { buttonHome, buttonFromAStroll };
             var raws = new[] { raw1, raw2 };
 
-            IReplyMarkup = new ReplyKeyboardMarkup(raws, true);
+            ReplyMarkup = new ReplyKeyboardMarkup(raws, true);
         }
 
         public static void LogException(Exception ex)
@@ -47,6 +47,6 @@ namespace StrollStatusBot.Web
 
         private static TimeZoneInfo _timeZoneInfo;
 
-        public static IReplyMarkup IReplyMarkup { get; private set; }
+        public static IReplyMarkup ReplyMarkup { get; private set; }
     }
 }

@@ -19,7 +19,7 @@ namespace StrollStatusBot.Web.Models.Commands
             {
                 builder.AppendLine(line);
             }
-            return client.SendTextMessageAsync(chatId, builder.ToString(), replyMarkup: Utils.IReplyMarkup);
+            return client.SendTextMessageAsync(chatId, builder.ToString(), replyMarkup: Utils.ReplyMarkup);
         }
 
         private readonly List<string> _instructionLines;

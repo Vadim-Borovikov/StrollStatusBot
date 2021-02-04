@@ -15,4 +15,9 @@
     <PackageReference Include="Telegram.Bot" Version="15.7.1" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <ProjectReference Include="..\StrollStatusBot\StrollStatusBot.csproj" />
+  </ItemGroup>
+
 </Project>

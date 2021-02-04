@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 using GoogleSheetsManager;
 using Telegram.Bot;
 
-namespace StrollStatusBot.Web.Models
+namespace StrollStatusBot.Users
 {
-    public sealed class UsersManager
+    internal sealed class Manager
     {
-        internal UsersManager(ITelegramBotClient client, Provider googleSheetsProvider, string googleRange)
+        internal Manager(ITelegramBotClient client, Provider googleSheetsProvider, string googleRange)
         {
             _client = client;
             _googleSheetsProvider = googleSheetsProvider;

@@ -5,17 +5,18 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using GoogleSheetsManager;
-using StrollStatusBot.Web.Models.Commands;
 using Newtonsoft.Json;
+using StrollStatusBot.Bot.Commands;
+using StrollStatusBot.Users;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace StrollStatusBot.Web.Models
+namespace StrollStatusBot.Bot
 {
-    internal sealed class Bot : IDisposable
+    public sealed class Bot : IDisposable
     {
-        public Bot(Config.Config config)
+        public Bot(Config config)
         {
             _config = config;
 
@@ -33,7 +34,7 @@ namespace StrollStatusBot.Web.Models
             Utils.SetupTimeZoneInfo(_config.SystemTimeZoneId);
             Utils.SetupReplyMarkup();
 
-            _usersManager = new UsersManager(_client, _googleSheetsProvider, _config.GoogleRange);
+            _usersManager = new Manager(_client, _googleSheetsProvider, _config.GoogleRange);
             _usersManager.LoadUsers();
 
             _commands = new List<Command>
@@ -75,10 +76,10 @@ namespace StrollStatusBot.Web.Models
         public Task<Telegram.Bot.Types.User> GetUserAsunc() => _client.GetMeAsync();
 
         private readonly TelegramBotClient _client;
-        private readonly Config.Config _config;
+        private readonly Config _config;
         private readonly List<Command> _commands;
         private readonly Provider _googleSheetsProvider;
-        private readonly UsersManager _usersManager;
+        private readonly Manager _usersManager;
 
         private const string ApplicationName = "StrollStatusBot";
     }

@@ -2,17 +2,17 @@ using System;
 using System.Collections.Generic;
 using GoogleSheetsManager;
 
-namespace StrollStatusBot.Web.Models
+namespace StrollStatusBot.Users
 {
-    internal sealed class User : ILoadable, ISavable
+    public sealed class User : ILoadable, ISavable
     {
         public int Id;
-        public string Status;
-        public DateTime? Timestamp;
+        internal string Status;
+        internal DateTime? Timestamp;
 
         public User() { }
 
-        public User(Telegram.Bot.Types.User from)
+        internal User(Telegram.Bot.Types.User from)
         {
             Id = from.Id;
             _name = $"{from.FirstName} {from.LastName}";

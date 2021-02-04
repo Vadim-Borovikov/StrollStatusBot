@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace StrollStatusBot.Web.Models.Config
+namespace StrollStatusBot.Bot
 {
     public sealed class Config
     {

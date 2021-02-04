@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace StrollStatusBot.Web.Models.Commands
+namespace StrollStatusBot.Bot.Commands
 {
     internal abstract class Command
     {

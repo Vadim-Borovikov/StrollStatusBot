@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using StrollStatusBot.Web.Models;
-using StrollStatusBot.Web.Models.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StrollStatusBot.Bot;
 
 namespace StrollStatusBot.Web
 {

@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 
 namespace StrollStatusBot.Web.Models.Commands
 {
-    public abstract class Command
+    internal abstract class Command
     {
         protected abstract string Name { get; }
 

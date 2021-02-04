@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using GoogleSheetsManager;
 using StrollStatusBot.Web.Models.Commands;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -14,11 +13,11 @@ using Telegram.Bot.Types.Enums;
 
 namespace StrollStatusBot.Web.Models
 {
-    public sealed class Bot : IDisposable
+    internal sealed class Bot : IDisposable
     {
-        public Bot(IOptions<Config.Config> options)
+        public Bot(Config.Config config)
         {
-            _config = options.Value;
+            _config = config;
 
             _client = new TelegramBotClient(_config.Token);
 
@@ -43,12 +42,12 @@ namespace StrollStatusBot.Web.Models
             };
         }
 
-        internal Task StartAsync(CancellationToken cancellationToken)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             return _client.SetWebhookAsync(_config.Url, cancellationToken: cancellationToken);
         }
 
-        internal Task UpdateAsync(Update update)
+        public Task UpdateAsync(Update update)
         {
             if (update?.Type != UpdateType.Message)
             {
@@ -69,11 +68,11 @@ namespace StrollStatusBot.Web.Models
                 : _usersManager.AddStatus(message.From, message.Text);
         }
 
-        internal Task StopAsync(CancellationToken cancellationToken) => _client.DeleteWebhookAsync(cancellationToken);
+        public Task StopAsync(CancellationToken cancellationToken) => _client.DeleteWebhookAsync(cancellationToken);
 
         public void Dispose() => _googleSheetsProvider?.Dispose();
 
-        internal Task<Telegram.Bot.Types.User> GetUserAsunc() => _client.GetMeAsync();
+        public Task<Telegram.Bot.Types.User> GetUserAsunc() => _client.GetMeAsync();
 
         private readonly TelegramBotClient _client;
         private readonly Config.Config _config;

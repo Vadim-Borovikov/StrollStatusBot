@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using GoogleSheetsManager;
 using Telegram.Bot;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace StrollStatusBot.Web.Models
 {

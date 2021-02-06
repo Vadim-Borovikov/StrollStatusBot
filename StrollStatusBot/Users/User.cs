@@ -4,15 +4,15 @@ using GoogleSheetsManager;
 
 namespace StrollStatusBot.Users
 {
-    public sealed class User : ILoadable, ISavable
+    internal sealed class User : ILoadable, ISavable
     {
         public int Id;
-        internal string Status;
-        internal DateTime? Timestamp;
+        public string Status;
+        public DateTime? Timestamp;
 
         public User() { }
 
-        internal User(Telegram.Bot.Types.User from)
+        public User(Telegram.Bot.Types.User from)
         {
             Id = from.Id;
             _name = $"{from.FirstName} {from.LastName}";

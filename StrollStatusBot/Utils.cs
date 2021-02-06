@@ -29,15 +29,9 @@ namespace StrollStatusBot
             return users?.ToDictionary(u => u.Id, u => u) ?? new Dictionary<int, User>();
         }
 
-        public static void SetupTimeZoneInfo(string id) => _timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(id);
-
-        public static DateTime Now() => TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, _timeZoneInfo);
-
         public static string GetHyperlink(Uri uri, string text) => string.Format(HyperlinkFormat, uri, text);
 
         private const string HyperlinkFormat = "=HYPERLINK(\"{0}\";\"{1}\")";
-
-        private static TimeZoneInfo _timeZoneInfo;
 
         public static IReplyMarkup ReplyMarkup { get; private set; }
     }

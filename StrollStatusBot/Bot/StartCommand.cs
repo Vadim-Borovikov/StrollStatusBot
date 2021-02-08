@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 
 namespace StrollStatusBot.Bot
 {
-    internal sealed class StartCommand : CommandBase<BotConfig>
+    internal sealed class StartCommand : CommandBase<Bot, BotConfig>
     {
         protected override string Name => "start";
         protected override string Description => "инструкция";

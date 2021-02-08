@@ -1,17 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoogleSheetsManager;
-using Telegram.Bot;
 
 namespace StrollStatusBot.Users
 {
     internal sealed class Manager
     {
-        internal Manager(ITelegramBotClient client, Provider googleSheetsProvider, string googleRange)
+        internal Manager(Bot.Bot bot)
         {
-            _client = client;
-            _googleSheetsProvider = googleSheetsProvider;
-            _googleRange = googleRange;
+            _bot = bot;
             _locker = new object();
         }
 
@@ -19,7 +16,7 @@ namespace StrollStatusBot.Users
         {
             lock (_locker)
             {
-                _users = Utils.GetUsers(_googleSheetsProvider, _googleRange);
+                _users = Utils.GetUsers(_bot.GoogleSheetsProvider, _bot.Config.GoogleRange);
             }
         }
 
@@ -32,17 +29,15 @@ namespace StrollStatusBot.Users
                     _users[from.Id] = new User(from);
                 }
                 _users[from.Id].Status = text;
-                _users[from.Id].Timestamp = AbstractBot.Utils.Now();
-                DataManager.UpdateValues(_googleSheetsProvider, _googleRange, _users.Values);
+                _users[from.Id].Timestamp = _bot.TimeManager.Now();
+                DataManager.UpdateValues(_bot.GoogleSheetsProvider, _bot.Config.GoogleRange, _users.Values);
             }
 
-            return _client.SendTextMessageAsync(from.Id, "✅", replyMarkup: Utils.ReplyMarkup);
+            return _bot.Client.SendTextMessageAsync(from.Id, "✅", replyMarkup: Utils.ReplyMarkup);
         }
 
         private readonly object _locker;
-        private readonly ITelegramBotClient _client;
-        private readonly Provider _googleSheetsProvider;
-        private readonly string _googleRange;
+        private readonly Bot.Bot _bot;
         private Dictionary<int, User> _users;
     }
 }

@@ -5,7 +5,7 @@ using Telegram.Bot.Types;
 
 namespace StrollStatusBot.Bot
 {
-    public sealed class Bot : BotBaseGoogleSheets<BotConfig>
+    public sealed class Bot : BotBaseGoogleSheets<Bot, BotConfig>
     {
         public Bot(BotConfig config) : base(config)
         {
@@ -13,11 +13,12 @@ namespace StrollStatusBot.Bot
 
             Utils.SetupReplyMarkup();
 
-            _usersManager = new Manager(Client, GoogleSheetsProvider, Config.GoogleRange);
+            _usersManager = new Manager(this);
             _usersManager.LoadUsers();
         }
 
-        protected override Task UpdateAsync(Message message, CommandBase<BotConfig> command, bool fromChat = false)
+        protected override Task UpdateAsync(Message message, CommandBase<Bot, BotConfig> command,
+            bool fromChat = false)
         {
             return command == null
                 ? _usersManager.AddStatus(message.From, message.Text)

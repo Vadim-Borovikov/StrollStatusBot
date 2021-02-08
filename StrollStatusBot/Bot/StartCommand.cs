@@ -1,25 +1,19 @@
 using System.Threading.Tasks;
 using AbstractBot;
-using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace StrollStatusBot.Bot
 {
-    internal sealed class StartCommand : CommandBase
+    internal sealed class StartCommand : CommandBase<BotConfig>
     {
         protected override string Name => "start";
         protected override string Description => "инструкция";
 
-        public StartCommand(IDescriptionProvider descriptionProvider) => _descriptionProvider = descriptionProvider;
+        public StartCommand(Bot bot) : base(bot) { }
 
-        public override Task ExecuteAsync(ChatId chatId, ITelegramBotClient client, int replyToMessageId = 0,
-            IReplyMarkup replyMarkup = null)
+        public override Task ExecuteAsync(Message message, bool fromChat = false)
         {
-            return client.SendTextMessageAsync(chatId, _descriptionProvider.GetDescription(),
-                replyToMessageId: replyToMessageId, replyMarkup: Utils.ReplyMarkup);
+            return Bot.Client.SendTextMessageAsync(message.Chat, Bot.GetDescription(), replyMarkup: Utils.ReplyMarkup);
         }
-
-        private readonly IDescriptionProvider _descriptionProvider;
     }
 }

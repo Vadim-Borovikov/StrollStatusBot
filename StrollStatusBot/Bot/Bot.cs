@@ -17,11 +17,11 @@ namespace StrollStatusBot.Bot
             _usersManager.LoadUsers();
         }
 
-        protected override Task UpdateAsync(Message message, CommandBase command, bool fromChat = false)
+        protected override Task UpdateAsync(Message message, CommandBase<BotConfig> command, bool fromChat = false)
         {
             return command == null
                 ? _usersManager.AddStatus(message.From, message.Text)
-                : command.ExecuteAsync(message.From.Id, Client);
+                : command.ExecuteAsync(message);
         }
 
         private readonly Manager _usersManager;

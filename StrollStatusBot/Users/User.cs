@@ -6,7 +6,9 @@ namespace StrollStatusBot.Users
 {
     internal sealed class User : ILoadable, ISavable
     {
-        public int Id;
+        IList<string> ISavable.Titles => Titles;
+
+        public long Id;
         public string Status;
         public DateTime? Timestamp;
 
@@ -19,36 +21,51 @@ namespace StrollStatusBot.Users
             _username = from.Username;
         }
 
-        public void Load(IList<object> values)
+        public void Load(IDictionary<string, object> valueSet)
         {
-            Id = values.ToInt(0) ?? throw new ArgumentNullException();
+            Id = valueSet[IdTitle]?.ToInt() ?? throw new ArgumentNullException();
 
-            _name = values.ToString(1);
+            _name = valueSet[NameTitle]?.ToString();
 
-            _username = values.ToString(2).Remove(0, 1);
+            _username = valueSet[UsernameTitle]?.ToString().Remove(0, 1);
 
-            Status = values.ToString(3);
+            Status = valueSet[StatusTitle]?.ToString();
 
-            Timestamp = values.ToDateTime(4);
+            Timestamp = valueSet[TimestampTitle]?.ToDateTime();
         }
 
-        public IList<object> Save()
+        public IDictionary<string, object> Save()
         {
             var uri = new Uri(string.Format(UriFormat, _username));
             string login = string.Format(LoginFormat, _username);
 
-            return new List<object>
+            return new Dictionary<string, object>
             {
-                Id,
-                _name,
-                $"{Utils.GetHyperlink(uri, login)}",
-                Status,
-                $"{Timestamp:d MMMM yyyy HH:mm:ss}"
+                { IdTitle, Id },
+                { NameTitle, _name },
+                { UsernameTitle, $"{Utils.GetHyperlink(uri, login)}" },
+                { StatusTitle, Status },
+                { TimestampTitle,  $"{Timestamp:d MMMM yyyy HH:mm:ss}" }
             };
         }
 
         private string _name;
         private string _username;
+
+        private static readonly IList<string> Titles = new List<string>
+        {
+            IdTitle,
+            NameTitle,
+            UsernameTitle,
+            StatusTitle,
+            TimestampTitle
+        };
+
+        private const string IdTitle = "Id";
+        private const string NameTitle = "Имя";
+        private const string UsernameTitle = "Ссылка";
+        private const string StatusTitle = "Статус";
+        private const string TimestampTitle = "Время";
 
         private const string UriFormat = "https://t.me/{0}";
         private const string LoginFormat = "@{0}";

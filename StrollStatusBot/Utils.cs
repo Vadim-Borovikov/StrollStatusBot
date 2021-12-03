@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GoogleSheetsManager;
+using GoogleSheetsManager.Providers;
 using StrollStatusBot.Users;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -20,13 +22,13 @@ namespace StrollStatusBot
             var raw2 = new[] { buttonHome, buttonFromAStroll };
             var raws = new[] { raw1, raw2 };
 
-            ReplyMarkup = new ReplyKeyboardMarkup(raws, true);
+            ReplyMarkup = new ReplyKeyboardMarkup(raws);
         }
 
-        public static Dictionary<int, User> GetUsers(Provider googleSheetsProvider, string googleRange)
+        public static async Task<Dictionary<long, User>> GetUsersAsync(SheetsProvider googleSheetsProvider, string googleRange)
         {
-            IList<User> users = DataManager.GetValues<User>(googleSheetsProvider, googleRange);
-            return users?.ToDictionary(u => u.Id, u => u) ?? new Dictionary<int, User>();
+            IList<User> users = await DataManager.GetValuesAsync<User>(googleSheetsProvider, googleRange);
+            return users?.ToDictionary(u => u.Id, u => u) ?? new Dictionary<long, User>();
         }
 
         public static string GetHyperlink(Uri uri, string text) => string.Format(HyperlinkFormat, uri, text);

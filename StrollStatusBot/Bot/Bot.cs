@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using AbstractBot;
 using StrollStatusBot.Users;
@@ -14,7 +15,12 @@ namespace StrollStatusBot.Bot
             Utils.SetupReplyMarkup();
 
             _usersManager = new Manager(this);
-            _usersManager.LoadUsers();
+        }
+
+        public override async Task StartAsync(CancellationToken cancellationToken)
+        {
+            await _usersManager.LoadUsersAsync();
+            await base.StartAsync(cancellationToken);
         }
 
         protected override Task UpdateAsync(Message message, CommandBase<Bot, BotConfig> command,

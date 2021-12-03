@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using AbstractBot;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace StrollStatusBot.Bot
@@ -13,7 +14,8 @@ namespace StrollStatusBot.Bot
 
         public override Task ExecuteAsync(Message message, bool fromChat = false)
         {
-            return Bot.Client.SendTextMessageAsync(message.Chat, Bot.GetDescription(), replyMarkup: Utils.ReplyMarkup);
+            return Bot.Client.SendTextMessageAsync(message.Chat, Bot.GetDescriptionFor(message.From.Id),
+                replyMarkup: Utils.ReplyMarkup);
         }
     }
 }

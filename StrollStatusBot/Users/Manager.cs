@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GoogleSheetsManager;
+using Telegram.Bot;
 
 namespace StrollStatusBot.Users
 {
@@ -12,15 +14,16 @@ namespace StrollStatusBot.Users
             _locker = new object();
         }
 
-        internal void LoadUsers()
+        internal async Task LoadUsersAsync()
         {
+            Dictionary<long, User> users = await Utils.GetUsersAsync(_bot.GoogleSheetsProvider, _bot.Config.GoogleRange);
             lock (_locker)
             {
-                _users = Utils.GetUsers(_bot.GoogleSheetsProvider, _bot.Config.GoogleRange);
+                _users = users;
             }
         }
 
-        internal Task AddStatus(Telegram.Bot.Types.User from, string text)
+        internal async Task AddStatus(Telegram.Bot.Types.User from, string text)
         {
             lock (_locker)
             {
@@ -30,14 +33,14 @@ namespace StrollStatusBot.Users
                 }
                 _users[from.Id].Status = text;
                 _users[from.Id].Timestamp = _bot.TimeManager.Now();
-                DataManager.UpdateValues(_bot.GoogleSheetsProvider, _bot.Config.GoogleRange, _users.Values);
             }
+            await DataManager.UpdateValuesAsync(_bot.GoogleSheetsProvider, _bot.Config.GoogleRange, _users.Values.ToList());
 
-            return _bot.Client.SendTextMessageAsync(from.Id, "✅", replyMarkup: Utils.ReplyMarkup);
+            await _bot.Client.SendTextMessageAsync(from.Id, "✅", replyMarkup: Utils.ReplyMarkup);
         }
 
         private readonly object _locker;
         private readonly Bot.Bot _bot;
-        private Dictionary<int, User> _users;
+        private Dictionary<long, User> _users;
     }
 }

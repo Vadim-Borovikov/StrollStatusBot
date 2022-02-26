@@ -330,5 +330,4 @@ ASALocalRun/
 .mfractor/
 
 /StrollStatusBot.Web/appsettings.Development.json
-/StrollStatusBot/nuget.config
-/StrollStatusBot/nuget push.cmd
+/NuGet.Config

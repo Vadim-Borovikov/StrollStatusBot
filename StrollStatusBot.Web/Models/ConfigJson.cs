@@ -17,6 +17,12 @@ public sealed class ConfigJson : IConvertibleTo<Config>
     public string? DontUnderstandStickerFileId { get; set; }
     [JsonProperty]
     public string? ForbiddenStickerFileId { get; set; }
+    [JsonProperty]
+    public double? UpdatesPerSecondLimitPrivate { get; set; }
+    [JsonProperty]
+    public double? UpdatesPerMinuteLimitGroup { get; set; }
+    [JsonProperty]
+    public double? UpdatesPerSecondLimitGlobal { get; set; }
 
     [JsonProperty]
     public string? Host { get; set; }
@@ -40,6 +46,8 @@ public sealed class ConfigJson : IConvertibleTo<Config>
     public string? GoogleRange { get; set; }
 
     [JsonProperty]
+    public string? AdminIdsJson { get; set; }
+    [JsonProperty]
     public string? CultureInfoName { get; set; }
     [JsonProperty]
     public Dictionary<string, string?>? GoogleCredential { get; set; }
@@ -51,22 +59,40 @@ public sealed class ConfigJson : IConvertibleTo<Config>
         string dontUnderstandStickerFileId = DontUnderstandStickerFileId.GetValue(nameof(DontUnderstandStickerFileId));
         string forbiddenStickerFileId = ForbiddenStickerFileId.GetValue(nameof(ForbiddenStickerFileId));
 
+        double updatesPerSecondLimitPrivate =
+            UpdatesPerSecondLimitPrivate.GetValue(nameof(UpdatesPerSecondLimitPrivate));
+        TimeSpan sendMessagePeriodPrivate = TimeSpan.FromSeconds(1.0 / updatesPerSecondLimitPrivate);
+
+        double updatesPerMinuteLimitGroup = UpdatesPerMinuteLimitGroup.GetValue(nameof(UpdatesPerMinuteLimitGroup));
+        TimeSpan sendMessagePeriodGroup = TimeSpan.FromMinutes(1.0 / updatesPerMinuteLimitGroup);
+
+        double updatesPerSecondLimitGlobal = UpdatesPerSecondLimitGlobal.GetValue(nameof(UpdatesPerSecondLimitGlobal));
+        TimeSpan sendMessagePeriodGlobal = TimeSpan.FromSeconds(1.0 / updatesPerSecondLimitGlobal);
+
         string googleCredentialJson = string.IsNullOrWhiteSpace(GoogleCredentialJson)
             ? JsonConvert.SerializeObject(GoogleCredential)
             : GoogleCredentialJson;
-
         string applicationName = ApplicationName.GetValue(nameof(ApplicationName));
         string googleSheetId = GoogleSheetId.GetValue(nameof(GoogleSheetId));
 
         string googleRange = GoogleRange.GetValue(nameof(GoogleRange));
 
+        if (AdminIds is null || (AdminIds.Count == 0))
+        {
+            string json = AdminIdsJson.GetValue(nameof(AdminIdsJson));
+            AdminIds = JsonConvert.DeserializeObject<List<long?>>(json);
+        }
+        IEnumerable<long> adminIds =
+            AdminIds is null ? Enumerable.Empty<long>() : AdminIds.Select(id => id.GetValue("Admin id"));
+
         return new Config(token, systemTimeZoneId, dontUnderstandStickerFileId, forbiddenStickerFileId,
-            googleCredentialJson, applicationName, googleSheetId, googleRange)
+            sendMessagePeriodPrivate, sendMessagePeriodGroup, sendMessagePeriodGlobal, googleCredentialJson,
+            applicationName, googleSheetId, googleRange)
         {
             Host = Host,
             About = About is null ? null : string.Join(Environment.NewLine, About),
             ExtraCommands = ExtraCommands is null ? null : string.Join(Environment.NewLine, ExtraCommands),
-            AdminIds = AdminIds?.Select(id => id.GetValue("Admin id")).ToList(),
+            AdminIds = adminIds.ToList(),
             SuperAdminId = SuperAdminId
         };
     }

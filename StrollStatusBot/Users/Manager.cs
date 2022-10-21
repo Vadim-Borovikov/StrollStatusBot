@@ -13,10 +13,12 @@ internal sealed class Manager
 
     internal async Task LoadUsersAsync()
     {
-        Dictionary<long, User> users = await Utils.GetUsersAsync(_bot.GoogleSheetsProvider, _bot.Config.GoogleRange);
+        SheetData<User> data =
+            await DataManager.GetValuesAsync<User>(_bot.GoogleSheetsProvider, _bot.Config.GoogleRange);
         lock (_locker)
         {
-            _users = users;
+            _titles = data.Titles;
+            _users = data.Instances.ToDictionary(u => u.Id, u => u);
         }
     }
 
@@ -36,13 +38,15 @@ internal sealed class Manager
                 _users[from.Id] = new User(from, text, timestamp);
             }
         }
-        await DataManager.UpdateValuesAsync(_bot.GoogleSheetsProvider, _bot.Config.GoogleRange,
-            _users.Values.ToList());
+
+        SheetData<User> data = new(_users.Values.ToList(), _titles);
+        await DataManager.UpdateValuesAsync(_bot.GoogleSheetsProvider, _bot.Config.GoogleRange, data);
 
         await _bot.Client.SendTextMessageAsync(from.Id, "✅", replyMarkup: Utils.ReplyMarkup);
     }
 
     private readonly Bot _bot;
+    private IList<string> _titles = Array.Empty<string>();
     private Dictionary<long, User> _users = new();
     private readonly object _locker = new();
 }

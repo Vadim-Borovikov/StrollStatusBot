@@ -1,18 +1,45 @@
-using System;
-using System.Collections.Generic;
 using GoogleSheetsManager;
-using GryphonUtilities;
+using System;
+using JetBrains.Annotations;
+
+// ReSharper disable NullableWarningSuppressionIsUsed
 
 namespace StrollStatusBot.Users;
 
-internal sealed class User : ISavable
+internal sealed class User
 {
-    IList<string> ISavable.Titles => Titles;
+    [SheetField("Id")]
+    [UsedImplicitly]
+    public long Id;
 
-    public readonly long Id;
+    [SheetField("Имя")]
+    [UsedImplicitly]
+    public string? Name;
 
-    public string Status { get; internal set; }
-    public DateTime Timestamp { get; internal set; }
+    [SheetField("Ссылка")]
+    [UsedImplicitly]
+    public string? Username
+    {
+        get
+        {
+            Uri uri = new(string.Format(UriFormat, _username));
+            string login = string.Format(LoginFormat, _username);
+
+            return $"{DataManager.GetHyperlink(uri, login)}";
+        }
+
+        set => _username = value?.Remove(0, 1);
+    }
+
+    [SheetField("Статус")]
+    [UsedImplicitly]
+    public string Status = null!;
+
+    [SheetField("Время", "{0:d MMMM yyyy HH:mm:ss}")]
+    [UsedImplicitly]
+    public DateTime Timestamp;
+
+    public User() { }
 
     public User(Telegram.Bot.Types.User from, string status, DateTime timestamp)
         : this(from.Id, from.Username, GetName(from), status, timestamp) { }
@@ -21,64 +48,16 @@ internal sealed class User : ISavable
     {
         Id = id;
         _username = username;
-        _name = name;
+        Name = name;
         Status = status;
         Timestamp = timestamp;
     }
 
-    public static User Load(IDictionary<string, object?> valueSet)
-    {
-        long id = valueSet[IdTitle].ToLong().GetValue("Empty Id");
-
-        string? status = valueSet[StatusTitle]?.ToString();
-        string statusValue = status.GetValue($"Empty status in {id}");
-
-        DateTime timestamp = valueSet[TimestampTitle].ToDateTime().GetValue($"Empty datetime in {id}");
-
-        string? name = valueSet[NameTitle]?.ToString();
-
-        string? username = valueSet[UsernameTitle]?.ToString()?.Remove(0, 1);
-
-        return new User(id, username, name, statusValue, timestamp);
-    }
-
-    public void UpdateName(Telegram.Bot.Types.User from) => _name = GetName(from);
-
-    public IDictionary<string, object?> Convert()
-    {
-        Uri uri = new(string.Format(UriFormat, _username));
-        string login = string.Format(LoginFormat, _username);
-
-        return new Dictionary<string, object?>
-        {
-            { IdTitle, Id },
-            { NameTitle, _name },
-            { UsernameTitle, $"{Utils.GetHyperlink(uri, login)}" },
-            { StatusTitle, Status },
-            { TimestampTitle, $"{Timestamp:d MMMM yyyy HH:mm:ss}" }
-        };
-    }
+    public void UpdateName(Telegram.Bot.Types.User from) => Name = GetName(from);
 
     private static string GetName(Telegram.Bot.Types.User from) => $"{from.FirstName} {from.LastName}";
 
-    private readonly string? _username;
-
-    private string? _name;
-
-    private static readonly List<string> Titles = new()
-    {
-        IdTitle,
-        NameTitle,
-        UsernameTitle,
-        StatusTitle,
-        TimestampTitle
-    };
-
-    private const string IdTitle = "Id";
-    private const string NameTitle = "Имя";
-    private const string UsernameTitle = "Ссылка";
-    private const string StatusTitle = "Статус";
-    private const string TimestampTitle = "Время";
+    private string? _username;
 
     private const string UriFormat = "https://t.me/{0}";
     private const string LoginFormat = "@{0}";

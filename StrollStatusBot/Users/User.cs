@@ -8,7 +8,7 @@ namespace StrollStatusBot.Users;
 
 internal sealed class User
 {
-    [SheetField("Id")]
+    [SheetField]
     [UsedImplicitly]
     public long Id;
 

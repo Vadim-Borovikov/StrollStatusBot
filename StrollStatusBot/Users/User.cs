@@ -25,7 +25,7 @@ internal sealed class User
             Uri uri = new(string.Format(UriFormat, _username));
             string login = string.Format(LoginFormat, _username);
 
-            return $"{DataManager.GetHyperlink(uri, login)}";
+            return $"{GoogleSheetsManager.Utils.GetHyperlink(uri, login)}";
         }
 
         set => _username = value?.Remove(0, 1);

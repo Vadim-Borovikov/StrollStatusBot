@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GoogleSheetsManager;
-using Telegram.Bot;
+using GryphonUtilities;
+using Telegram.Bot.Types;
 
 namespace StrollStatusBot.Users;
 
@@ -13,8 +14,8 @@ internal sealed class Manager
 
     internal async Task LoadUsersAsync()
     {
-        SheetData<User> data =
-            await DataManager.GetValuesAsync<User>(_bot.GoogleSheetsProvider, _bot.Config.GoogleRange);
+        SheetData<User> data = await DataManager<User>.LoadAsync(_bot.GoogleSheetsProvider, _bot.Config.GoogleRange,
+            additionalConverters: AdditionalConverters);
         lock (_locker)
         {
             _titles = data.Titles;
@@ -22,8 +23,9 @@ internal sealed class Manager
         }
     }
 
-    internal async Task AddStatus(Telegram.Bot.Types.User from, string text)
+    internal async Task AddStatus(Message message, string text)
     {
+        Telegram.Bot.Types.User from = message.From.GetValue(nameof(message.From));
         DateTime timestamp = _bot.TimeManager.Now();
         lock (_locker)
         {
@@ -40,13 +42,19 @@ internal sealed class Manager
         }
 
         SheetData<User> data = new(_users.Values.ToList(), _titles);
-        await DataManager.UpdateValuesAsync(_bot.GoogleSheetsProvider, _bot.Config.GoogleRange, data);
+        await DataManager<User>.SaveAsync(_bot.GoogleSheetsProvider, _bot.Config.GoogleRange, data);
 
-        await _bot.Client.SendTextMessageAsync(from.Id, "✅", replyMarkup: Utils.ReplyMarkup);
+        await _bot.SendTextMessageAsync(message.Chat, "✅", replyMarkup: Utils.ReplyMarkup);
     }
 
     private readonly Bot _bot;
     private IList<string> _titles = Array.Empty<string>();
     private Dictionary<long, User> _users = new();
     private readonly object _locker = new();
+
+    private static readonly Dictionary<Type, Func<object?, object?>> AdditionalConverters = new()
+    {
+        { typeof(long), o => o.ToLong() },
+        { typeof(long?), o => o.ToLong() }
+    };
 }

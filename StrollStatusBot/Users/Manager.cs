@@ -26,7 +26,7 @@ internal sealed class Manager
     internal async Task AddStatus(Message message, string text)
     {
         Telegram.Bot.Types.User from = message.From.GetValue(nameof(message.From));
-        DateTime timestamp = _bot.TimeManager.Now();
+        DateTimeOffset timestamp = _bot.TimeManager.Now();
         lock (_locker)
         {
             if (_users.ContainsKey(from.Id))

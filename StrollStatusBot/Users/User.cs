@@ -37,14 +37,14 @@ internal sealed class User
 
     [SheetField("Время", "{0:d MMMM yyyy HH:mm:ss}")]
     [UsedImplicitly]
-    public DateTime Timestamp;
+    public DateTimeOffset Timestamp;
 
     public User() { }
 
-    public User(Telegram.Bot.Types.User from, string status, DateTime timestamp)
+    public User(Telegram.Bot.Types.User from, string status, DateTimeOffset timestamp)
         : this(from.Id, from.Username, GetName(from), status, timestamp) { }
 
-    private User(long id, string? username, string? name, string status, DateTime timestamp)
+    private User(long id, string? username, string? name, string status, DateTimeOffset timestamp)
     {
         Id = id;
         _username = username;

@@ -15,7 +15,7 @@ internal sealed class Manager
     internal async Task LoadUsersAsync()
     {
         SheetData<User> data = await DataManager<User>.LoadAsync(_bot.GoogleSheetsProvider, _bot.Config.GoogleRange,
-            additionalConverters: AdditionalConverters);
+            additionalConverters: _bot.AdditionalConverters);
         lock (_locker)
         {
             _titles = data.Titles;
@@ -26,7 +26,7 @@ internal sealed class Manager
     internal async Task AddStatus(Message message, string text)
     {
         Telegram.Bot.Types.User from = message.From.GetValue(nameof(message.From));
-        DateTimeOffset timestamp = _bot.TimeManager.Now();
+        DateTimeFull timestamp = _bot.TimeManager.Now();
         lock (_locker)
         {
             if (_users.ContainsKey(from.Id))
@@ -51,10 +51,4 @@ internal sealed class Manager
     private IList<string> _titles = Array.Empty<string>();
     private Dictionary<long, User> _users = new();
     private readonly object _locker = new();
-
-    private static readonly Dictionary<Type, Func<object?, object?>> AdditionalConverters = new()
-    {
-        { typeof(long), o => o.ToLong() },
-        { typeof(long?), o => o.ToLong() }
-    };
 }

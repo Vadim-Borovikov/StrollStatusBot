@@ -1,5 +1,6 @@
 using GoogleSheetsManager;
 using System;
+using GryphonUtilities;
 using JetBrains.Annotations;
 
 // ReSharper disable NullableWarningSuppressionIsUsed
@@ -37,14 +38,14 @@ internal sealed class User
 
     [SheetField("Время", "{0:d MMMM yyyy HH:mm:ss}")]
     [UsedImplicitly]
-    public DateTimeOffset Timestamp;
+    public DateTimeFull Timestamp;
 
     public User() { }
 
-    public User(Telegram.Bot.Types.User from, string status, DateTimeOffset timestamp)
+    public User(Telegram.Bot.Types.User from, string status, DateTimeFull timestamp)
         : this(from.Id, from.Username, GetName(from), status, timestamp) { }
 
-    private User(long id, string? username, string? name, string status, DateTimeOffset timestamp)
+    private User(long id, string? username, string? name, string status, DateTimeFull timestamp)
     {
         Id = id;
         _username = username;

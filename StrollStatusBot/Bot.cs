@@ -9,7 +9,10 @@ namespace StrollStatusBot;
 
 public sealed class Bot : BotBaseGoogleSheets<Bot, Config>
 {
-    public Bot(Config config) : base(config) { }
+    public Bot(Config config) : base(config)
+    {
+        AdditionalConverters[typeof(long)] = AdditionalConverters[typeof(long?)] = o => o?.ToLong();
+    }
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {

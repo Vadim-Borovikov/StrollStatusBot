@@ -14,8 +14,8 @@ internal sealed class Manager
 
     internal async Task LoadUsersAsync()
     {
-        SheetData<User> data = await DataManager<User>.LoadAsync(_bot.GoogleSheetsProvider, _bot.Config.GoogleRange,
-            additionalConverters: _bot.AdditionalConverters);
+        SheetData<User> data = await DataManager<User>.LoadAsync(_bot.GoogleSheetsComponent.GoogleSheetsProvider,
+            _bot.Config.GoogleRange, additionalConverters: _bot.GoogleSheetsComponent.AdditionalConverters);
         lock (_locker)
         {
             _titles = data.Titles;
@@ -42,7 +42,8 @@ internal sealed class Manager
         }
 
         SheetData<User> data = new(_users.Values.ToList(), _titles);
-        await DataManager<User>.SaveAsync(_bot.GoogleSheetsProvider, _bot.Config.GoogleRange, data);
+        await DataManager<User>.SaveAsync(_bot.GoogleSheetsComponent.GoogleSheetsProvider, _bot.Config.GoogleRange,
+            data);
 
         await _bot.SendTextMessageAsync(message.Chat, "✅", replyMarkup: Utils.ReplyMarkup);
     }

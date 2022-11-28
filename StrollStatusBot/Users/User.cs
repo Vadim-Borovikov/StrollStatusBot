@@ -2,6 +2,7 @@ using GoogleSheetsManager;
 using System;
 using GryphonUtilities;
 using JetBrains.Annotations;
+using Telegram.Bot.Types;
 
 // ReSharper disable NullableWarningSuppressionIsUsed
 
@@ -23,13 +24,18 @@ internal sealed class User
     {
         get
         {
+            if (string.IsNullOrWhiteSpace(_username))
+            {
+                return null;
+            }
+
             Uri uri = new(string.Format(UriFormat, _username));
             string login = string.Format(LoginFormat, _username);
 
             return $"{GoogleSheetsManager.Utils.GetHyperlink(uri, login)}";
         }
 
-        set => _username = value?.Remove(0, 1);
+        set => _username = string.IsNullOrWhiteSpace(value) ? null : value.Remove(0, 1);
     }
 
     [SheetField("Статус")]
@@ -42,7 +48,7 @@ internal sealed class User
 
     public User() { }
 
-    public User(Telegram.Bot.Types.User from, string status, DateTimeFull timestamp)
+    public User(Chat from, string status, DateTimeFull timestamp)
         : this(from.Id, from.Username, GetName(from), status, timestamp) { }
 
     private User(long id, string? username, string? name, string status, DateTimeFull timestamp)
@@ -54,9 +60,9 @@ internal sealed class User
         Timestamp = timestamp;
     }
 
-    public void UpdateName(Telegram.Bot.Types.User from) => Name = GetName(from);
+    public void UpdateName(Chat from) => Name = GetName(from);
 
-    private static string GetName(Telegram.Bot.Types.User from) => $"{from.FirstName} {from.LastName}";
+    private static string GetName(Chat from) => $"{from.FirstName} {from.LastName}";
 
     private string? _username;
 

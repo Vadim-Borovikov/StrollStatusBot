@@ -18,12 +18,14 @@ public sealed class Bot : BotBaseCustom<Config>, IBotGoogleSheets
             new GoogleSheetsComponent(config, JsonSerializerOptionsProvider.PascalCaseOptions, TimeManager);
         GoogleSheetsComponent.AdditionalConverters[typeof(long)] =
             GoogleSheetsComponent.AdditionalConverters[typeof(long?)] = o => o?.ToLong();
+
+        _usersManager = new Manager(this);
     }
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
         Utils.SetupReplyMarkup();
-        await UsersManager.LoadUsersAsync();
+        await _usersManager.LoadUsersAsync();
         await base.StartAsync(cancellationToken);
     }
 
@@ -33,10 +35,9 @@ public sealed class Bot : BotBaseCustom<Config>, IBotGoogleSheets
         string? payload = null)
     {
         return command is null
-            ? UsersManager.AddStatus(message, message.Text ?? "")
+            ? _usersManager.AddStatus(message, message.Chat, message.Text ?? "")
             : command.ExecuteAsync(message, message.Chat, payload);
     }
 
-    private Manager UsersManager => _usersManager ??= new Manager(this);
-    private Manager? _usersManager;
+    private readonly Manager _usersManager;
 }

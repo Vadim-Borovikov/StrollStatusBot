@@ -23,21 +23,20 @@ internal sealed class Manager
         }
     }
 
-    internal async Task AddStatus(Message message, string text)
+    internal async Task AddStatus(Message message, Chat chat, string text)
     {
-        Telegram.Bot.Types.User from = message.From.GetValue(nameof(message.From));
         DateTimeFull timestamp = _bot.TimeManager.Now();
         lock (_locker)
         {
-            if (_users.ContainsKey(from.Id))
+            if (_users.ContainsKey(chat.Id))
             {
-                _users[from.Id].UpdateName(from);
-                _users[from.Id].Status = text;
-                _users[from.Id].Timestamp = timestamp;
+                _users[chat.Id].UpdateName(chat);
+                _users[chat.Id].Status = text;
+                _users[chat.Id].Timestamp = timestamp;
             }
             else
             {
-                _users[from.Id] = new User(from, text, timestamp);
+                _users[chat.Id] = new User(chat, text, timestamp);
             }
         }
 

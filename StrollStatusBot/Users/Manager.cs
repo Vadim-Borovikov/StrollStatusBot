@@ -23,7 +23,9 @@ internal sealed class Manager
         }
     }
 
-    internal async Task AddStatus(Message message, Chat chat, string text)
+    internal Task AddStatus(Message message, string text) => AddStatus(message, message.Chat, text);
+
+    private async Task AddStatus(Message message, Chat chat, string text)
     {
         DateTimeFull timestamp = _bot.TimeManager.Now();
         lock (_locker)

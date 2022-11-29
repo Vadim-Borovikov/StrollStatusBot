@@ -35,8 +35,8 @@ public sealed class Bot : BotBaseCustom<Config>, IBotGoogleSheets
         string? payload = null)
     {
         return command is null
-            ? _usersManager.AddStatus(message, message.Chat, message.Text ?? "")
-            : command.ExecuteAsync(message, message.Chat, payload);
+            ? _usersManager.AddStatus(message, message.Text ?? "")
+            : command.ExecuteAsync(message, payload);
     }
 
     private readonly Manager _usersManager;

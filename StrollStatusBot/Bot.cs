@@ -19,11 +19,8 @@ public sealed class Bot : BotBaseCustom<Config>, IDisposable
     public Bot(Config config) : base(config)
     {
         GoogleSheetsProvider = new SheetsProvider(config, config.GoogleSheetId);
-        AdditionalConverters = new Dictionary<Type, Func<object?, object?>>
-        {
-            { typeof(long), o => o?.ToLong() },
-            { typeof(long?), o => o?.ToLong() }
-        };
+        AdditionalConverters = new Dictionary<Type, Func<object?, object?>>();
+        AdditionalConverters[typeof(long)] = AdditionalConverters[typeof(long?)] = o => o?.ToLong();
         _usersManager = new Manager(this);
     }
 

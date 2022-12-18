@@ -3,6 +3,7 @@ using System;
 using GryphonUtilities;
 using JetBrains.Annotations;
 using Telegram.Bot.Types;
+using GoogleSheetsManager.Extensions;
 
 // ReSharper disable NullableWarningSuppressionIsUsed
 
@@ -32,7 +33,7 @@ internal sealed class User
             Uri uri = new(string.Format(UriFormat, _username));
             string login = string.Format(LoginFormat, _username);
 
-            return $"{GoogleSheetsManager.Utils.GetHyperlink(uri, login)}";
+            return uri.ToHyperlink(login);
         }
 
         set => _username = string.IsNullOrWhiteSpace(value) ? null : value.Remove(0, 1);

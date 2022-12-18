@@ -2,26 +2,27 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using AbstractBot;
-using AbstractBot.Commands;
-using GoogleSheetsManager.Providers;
+using AbstractBot.Bots;
+using GoogleSheetsManager.Documents;
 using StrollStatusBot.Users;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace StrollStatusBot;
 
-public sealed class Bot : BotBaseCustom<Config>, IDisposable
+public sealed class Bot : BotWithSheets<Config>
 {
-    internal readonly SheetsProvider GoogleSheetsProvider;
-    internal readonly Dictionary<Type, Func<object?, object?>> AdditionalConverters;
-
     public Bot(Config config) : base(config)
     {
-        GoogleSheetsProvider = new SheetsProvider(config, config.GoogleSheetId);
-        AdditionalConverters = new Dictionary<Type, Func<object?, object?>>();
-        AdditionalConverters[typeof(long)] = AdditionalConverters[typeof(long?)] = o => o?.ToLong();
-        _usersManager = new Manager(this);
+        GoogleSheetsManager.Documents.Document document = DocumentsManager.GetOrAdd(config.GoogleSheetId);
+
+        Dictionary<Type, Func<object?, object?>> additionalConverters = new();
+        additionalConverters[typeof(long)] = additionalConverters[typeof(long?)] = o => o.ToLong();
+
+        Sheet sheet = document.GetOrAddSheet(config.GoogleTitle, additionalConverters);
+
+        _usersManager = new Manager(this, sheet);
+        Operations.Add(new UpdateStatusOperation(this, _usersManager));
     }
 
     public override async Task StartAsync(CancellationToken cancellationToken)
@@ -30,17 +31,23 @@ public sealed class Bot : BotBaseCustom<Config>, IDisposable
         await base.StartAsync(cancellationToken);
     }
 
-    public void Dispose() => GoogleSheetsProvider.Dispose();
-
-    protected override Task UpdateAsync(Message message, Chat senderChat, CommandBase? command = null,
-        string? payload = null)
+    private static ReplyKeyboardMarkup SetupKeyboard()
     {
-        return command is null
-            ? _usersManager.AddStatus(message, message.Text ?? "")
-            : command.ExecuteAsync(message, payload);
+        KeyboardButton buttonHome = new("Дома");
+        KeyboardButton buttonStroll = new("Гуляю");
+        KeyboardButton buttonForAStroll = new("Еду на прогулку");
+        KeyboardButton buttonFromAStroll = new("Еду с прогулки");
+
+        KeyboardButton[] raw1 = { buttonStroll, buttonForAStroll };
+        KeyboardButton[] raw2 = { buttonHome, buttonFromAStroll };
+        KeyboardButton[][] raws = { raw1, raw2 };
+
+        return new ReplyKeyboardMarkup(raws);
     }
 
-    protected override IReplyMarkup GetDefaultKeyboard(Chat _) => Utils.Keyboard;
+    protected override IReplyMarkup GetDefaultKeyboard(Chat _) => Keyboard;
+
+    private static readonly ReplyKeyboardMarkup Keyboard = SetupKeyboard();
 
     private readonly Manager _usersManager;
 }
